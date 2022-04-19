@@ -93,6 +93,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
   const menuDataRef = useRef<MenuDataItem[]>([]);
 
   useEffect(() => {
+    console.log(2);
+
+    // 获取用户信息
     if (dispatch) {
       dispatch({
         type: 'user/fetchCurrent',

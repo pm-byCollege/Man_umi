@@ -4,8 +4,13 @@ export async function query(): Promise<any> {
   return request('/api/users');
 }
 
-export async function queryCurrent(): Promise<any> {
-  return request('/api/currentUser');
+export async function queryCurrent(phone: string): Promise<any> {
+  console.log(3);
+  return request('/api/info', {
+    // headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    data: { phone },
+  });
 }
 
 export async function queryNotices(): Promise<any> {

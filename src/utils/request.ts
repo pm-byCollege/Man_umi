@@ -2,6 +2,8 @@
 import { extend } from 'umi-request';
 import { notification } from 'antd';
 
+import Cookies from 'js-cookie';
+
 const codeMessage: Record<number, string> = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -50,6 +52,19 @@ const errorHandler = (error: { response: Response }): Response => {
 const request = extend({
   errorHandler, // default error handling
   credentials: 'include', // Does the default request bring cookies
+});
+
+request.interceptors.request.use((url, options) => {
+  const token = Cookies.get('token');
+  console.log(options);
+  let { headers } = options;
+  if (token) {
+    headers = {
+      ...options.headers,
+      token,
+    };
+  }
+  return { url, options: { ...options, headers } };
 });
 
 export default request;

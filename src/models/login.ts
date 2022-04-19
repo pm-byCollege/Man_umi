@@ -6,6 +6,7 @@ import { fakeAccountLogin } from '@/services/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { message } from 'antd';
+import Cookies from 'js-cookie';
 
 export type StateType = {
   status?: 'ok' | 'error';
@@ -40,11 +41,18 @@ const Model: LoginModelType = {
         payload: response,
       });
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.msg === '200') {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
+
         message.success('🎉 🎉 🎉  登录成功！');
+
+        const { data } = response;
+        // 设置Cookie
+        Cookies.set('token', data.token);
+        Cookies.set('phone', data.phone);
         let { redirect } = params as { redirect: string };
+        console.log(redirect);
         if (redirect) {
           const redirectUrlParams = new URL(redirect);
           if (redirectUrlParams.origin === urlParams.origin) {
@@ -60,6 +68,7 @@ const Model: LoginModelType = {
             return;
           }
         }
+        console.log(redirect, '登录后重定向');
         history.replace(redirect || '/');
       }
     },

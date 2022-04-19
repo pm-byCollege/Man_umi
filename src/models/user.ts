@@ -2,6 +2,8 @@ import type { Effect, Reducer } from 'umi';
 
 import { queryCurrent, query as queryUsers } from '@/services/user';
 
+import Cookies from 'js-cookie';
+
 export type CurrentUser = {
   avatar?: string;
   name?: string;
@@ -49,7 +51,7 @@ const UserModel: UserModelType = {
       });
     },
     *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
+      const response = yield call(queryCurrent, Cookies.get('phone'));
       yield put({
         type: 'saveCurrentUser',
         payload: response,

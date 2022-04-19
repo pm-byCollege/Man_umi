@@ -18,6 +18,7 @@ const UserLayout: React.FC<UserLayoutProps> = (props) => {
       routes: [],
     },
   } = props;
+
   const { routes = [] } = route;
   const {
     children,

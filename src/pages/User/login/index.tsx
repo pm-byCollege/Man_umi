@@ -1,15 +1,15 @@
 import {
-  AlipayCircleOutlined,
+  // AlipayCircleOutlined,
   LockOutlined,
   MailOutlined,
   MobileOutlined,
-  TaobaoCircleOutlined,
+  // TaobaoCircleOutlined,
   UserOutlined,
-  WeiboCircleOutlined,
+  // WeiboCircleOutlined,
 } from '@ant-design/icons';
-import { Alert, Space, message, Tabs } from 'antd';
+import { message, Tabs, Button } from 'antd';
 import React, { useState } from 'react';
-import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
+import ProForm, { ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
 import { useIntl, connect, FormattedMessage } from 'umi';
 import { getFakeCaptcha } from '@/services/login';
 import type { Dispatch } from 'umi';
@@ -25,38 +25,40 @@ export type LoginProps = {
   submitting?: boolean;
 };
 
-const LoginMessage: React.FC<{
-  content: string;
-}> = ({ content }) => (
-  <Alert
-    style={{
-      marginBottom: 24,
-    }}
-    message={content}
-    type="error"
-    showIcon
-  />
-);
+// const LoginMessage: React.FC<{
+//   content: string;
+// }> = ({ content }) => (
+//   <Alert
+//     style={{
+//       marginBottom: 24,
+//     }}
+//     message={content}
+//     type="error"
+//     showIcon
+//   />
+// );
 
 const Login: React.FC<LoginProps> = (props) => {
-  const { userLogin = {}, submitting } = props;
-  const { status, type: loginType } = userLogin;
+  const { submitting } = props;
+  // const { status, type: loginType } = userLogin;
   const [type, setType] = useState<string>('account');
   const intl = useIntl();
 
   const handleSubmit = (values: LoginParamsType) => {
     const { dispatch } = props;
+    console.log(values, '提交');
     dispatch({
       type: 'login/login',
       payload: { ...values, type },
     });
   };
+
   return (
     <div className={styles.main}>
       <ProForm
-        initialValues={{
-          autoLogin: true,
-        }}
+        // initialValues={{
+        //   autoLogin: true,
+        // }}
         submitter={{
           render: (_, dom) => dom.pop(),
           submitButtonProps: {
@@ -80,27 +82,21 @@ const Login: React.FC<LoginProps> = (props) => {
               defaultMessage: 'Account password login',
             })}
           />
-          <Tabs.TabPane
-            key="mobile"
-            tab={intl.formatMessage({
-              id: 'pages.login.phoneLogin.tab',
-              defaultMessage: 'Mobile phone number login',
-            })}
-          />
+          <Tabs.TabPane key="foget" tab="忘记密码" />
         </Tabs>
 
-        {status === 'error' && loginType === 'account' && !submitting && (
+        {/* {status === 'error' && loginType === 'account' && !submitting && (
           <LoginMessage
             content={intl.formatMessage({
               id: 'pages.login.accountLogin.errorMessage',
               defaultMessage: 'Incorrect account or password（admin/ant.design)',
             })}
           />
-        )}
+        )} */}
         {type === 'account' && (
           <>
             <ProFormText
-              name="userName"
+              name="username"
               fieldProps={{
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,
@@ -146,10 +142,10 @@ const Login: React.FC<LoginProps> = (props) => {
           </>
         )}
 
-        {status === 'error' && loginType === 'mobile' && !submitting && (
+        {/* {status === 'error' && loginType === 'mobile' && !submitting && (
           <LoginMessage content="Verification code error" />
-        )}
-        {type === 'mobile' && (
+        )} */}
+        {type === 'foget' && (
           <>
             <ProFormText
               fieldProps={{
@@ -157,10 +153,7 @@ const Login: React.FC<LoginProps> = (props) => {
                 prefix: <MobileOutlined className={styles.prefixIcon} />,
               }}
               name="mobile"
-              placeholder={intl.formatMessage({
-                id: 'pages.login.phoneNumber.placeholder',
-                defaultMessage: 'Phone number',
-              })}
+              placeholder="请输入手机号"
               rules={[
                 {
                   required: true,
@@ -235,24 +228,29 @@ const Login: React.FC<LoginProps> = (props) => {
             marginBottom: 24,
           }}
         >
-          <ProFormCheckbox noStyle name="autoLogin">
+          {/* <ProFormCheckbox noStyle name="autoLogin">
             <FormattedMessage id="pages.login.rememberMe" defaultMessage="Auto login" />
-          </ProFormCheckbox>
-          <a
-            style={{
-              float: 'right',
+          </ProFormCheckbox> */}
+          <Button
+            style={
+              type === 'foget'
+                ? {
+                    float: 'right',
+                    display: 'none',
+                  }
+                : {
+                    float: 'right',
+                  }
+            }
+            type="link"
+            onClick={() => {
+              setType('foget');
             }}
           >
-            <FormattedMessage id="pages.login.forgotPassword" defaultMessage="Forget password" />
-          </a>
+            忘记密码
+          </Button>
         </div>
       </ProForm>
-      <Space className={styles.other}>
-        <FormattedMessage id="pages.login.loginWith" defaultMessage="Other login methods" />
-        <AlipayCircleOutlined className={styles.icon} />
-        <TaobaoCircleOutlined className={styles.icon} />
-        <WeiboCircleOutlined className={styles.icon} />
-      </Space>
     </div>
   );
 };

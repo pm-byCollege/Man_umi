@@ -8,10 +8,13 @@ const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
   hash: true,
+  mfsu: {},
+  webpack5: {},
   antd: {},
   dva: {
     hmr: true,
   },
+  fastRefresh: {},
   history: {
     type: 'browser',
   },
