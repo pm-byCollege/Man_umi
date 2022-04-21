@@ -5,7 +5,6 @@ export async function query(): Promise<any> {
 }
 
 export async function queryCurrent(phone: string): Promise<any> {
-  console.log(3);
   return request('/api/info', {
     // headers: { 'Content-Type': 'application/json' },
     method: 'POST',

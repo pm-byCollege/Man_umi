@@ -56,7 +56,6 @@ const request = extend({
 
 request.interceptors.request.use((url, options) => {
   const token = Cookies.get('token');
-  console.log(options);
   let { headers } = options;
   if (token) {
     headers = {

@@ -1,14 +1,19 @@
 /*
- * @Descripttion: 
+ * @Descripttion:
  * @version: 1.0
- * @Author: 
+ * @Author:
  * @Date: 2021-10-08 15:46:24
  * @LastEditors: YingJie Xing
  * @LastEditTime: 2021-10-09 19:07:03
  * @FilePath: \ant-design-pro\src\components\GlobalHeader\AvatarDropdown.tsx
- * Copyright 2021 YingJie Xing, All Rights Reserved. 
+ * Copyright 2021 YingJie Xing, All Rights Reserved.
  */
-import { LogoutOutlined, SettingOutlined, UnorderedListOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  LogoutOutlined,
+  SettingOutlined,
+  UnorderedListOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { Avatar, Menu, Spin, Badge } from 'antd';
 import React from 'react';
 import type { ConnectProps } from 'umi';
@@ -17,7 +22,7 @@ import type { ConnectState } from '@/models/connect';
 import type { CurrentUser } from '@/models/user';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
-import { getTodoLists } from '@/services/todo'
+// import { getTodoLists } from '@/services/todo';
 
 export type GlobalHeaderRightProps = {
   currentUser?: CurrentUser;
@@ -26,8 +31,8 @@ export type GlobalHeaderRightProps = {
 
 class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
   state = {
-    todoNum: 0
-  }
+    todoNum: 0,
+  };
 
   async componentDidMount() {
     // //方法一
@@ -46,16 +51,15 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
     const { dispatch } = this.props;
     dispatch({
       type: 'todo/getTodoList',
-      payload: 'null'
-    })
-
+      payload: 'null',
+    });
   }
   onMenuClick = (event: { key: React.Key; keyPath: React.Key[]; item: React.ReactInstance }) => {
     const { key } = event;
 
     if (key === 'todo') {
       history.push('/todo');
-      return
+      return;
     }
     if (key === 'logout') {
       const { dispatch } = this.props;
@@ -73,13 +77,13 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
   };
 
   render(): React.ReactNode {
-    const { todoList } = this.props?.todo
+    const { todoList } = this.props?.todo;
     // const todoNum = todoList.filter((item: any) => item.status === 0).length
     const todoNum = todoList?.filter((item: any) => {
       if (item != null) {
-        return item.status === 0
+        return item.status === 0;
       }
-    }).length
+    }).length;
     const {
       currentUser = {
         avatar: '',
@@ -87,6 +91,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
       },
       menu,
     } = this.props;
+
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
         {menu && (
@@ -118,8 +123,10 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
           <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-          <span className={`${styles.name} anticon`}>{currentUser.name}
-            <Badge count={todoNum} dot={true} /></span>
+          <span className={`${styles.name} anticon`}>
+            {currentUser.name}
+            <Badge count={todoNum} dot={true} />
+          </span>
         </span>
       </HeaderDropdown>
     ) : (
@@ -138,5 +145,5 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
 
 export default connect(({ user, todo }: ConnectState) => ({
   currentUser: user.currentUser,
-  todo: todo
+  todo: todo,
 }))(AvatarDropdown);

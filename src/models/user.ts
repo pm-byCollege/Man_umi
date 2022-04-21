@@ -54,7 +54,7 @@ const UserModel: UserModelType = {
       const response = yield call(queryCurrent, Cookies.get('phone'));
       yield put({
         type: 'saveCurrentUser',
-        payload: response,
+        payload: response.data.userData,
       });
     },
   },

@@ -76,6 +76,7 @@ const Model: LoginModelType = {
     logout() {
       const { redirect } = getPageQuery();
       // Note: There may be security issues, please note
+      Cookies.remove('token');
       if (window.location.pathname !== '/user/login' && !redirect) {
         history.replace({
           pathname: '/user/login',
@@ -89,11 +90,12 @@ const Model: LoginModelType = {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      const currentAuthority = payload.data.type === 1 ? 'admin' : 'user';
+      setAuthority(currentAuthority);
       return {
         ...state,
         status: payload.status,
-        type: payload.type,
+        type: payload.data.type,
       };
     },
   },
