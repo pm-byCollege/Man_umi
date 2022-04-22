@@ -26,6 +26,10 @@ const ExpiredContact: React.FC = () => {
   const { currentUser } = useSelector((state: any) => state.user);
   console.log(currentUser);
 
+  useEffect(() => {
+    ref.current?.reload();
+  }, [taskTableReload]);
+
   // const { setHeadTitle } = useContext(TemplateContext);
 
   const colums: ProColumns<TableListItem>[] = [
@@ -102,35 +106,39 @@ const ExpiredContact: React.FC = () => {
   }, [taskTableReload]);
 
   return (
-    <ProTable<TableListItem>
-      className={styles['firm-protable']}
-      rowKey="id"
-      actionRef={ref}
-      columnEmptyText={false}
-      form={{ labelCol: { span: 5 } }}
-      search={{ collapseRender: () => null, collapsed: false }}
-      columns={[...colums, ...searchFormColumns]}
-      request={async (params: Record<string, any>) => {
-        const { name, classify, region, current, ...res } = params;
-        const postParams = {
-          page: current,
-          pageSize: res.pageSize,
-          name,
-          classify,
-          region,
-        };
-        return fetchFirmList(postParams);
-      }}
-      defaultData={[]}
-      options={false}
-      // postData={(data) => {
-      //   return data.sort((a, b) => {
-      //     const aDay = new Date(a.createdDay.replace(new RegExp('-', 'gm'), '/')).getTime();
-      //     const bDay = new Date(b.createdDay.replace(new RegExp('-', 'gm'), '/')).getTime();
-      //     return bDay - aDay;
-      //   });
-      // }}
-    />
+    <TemplateContext.Consumer>
+      {() => (
+        <ProTable<TableListItem>
+          className={styles['firm-protable']}
+          rowKey="id"
+          actionRef={ref}
+          columnEmptyText={false}
+          form={{ labelCol: { span: 5 } }}
+          search={{ collapseRender: () => null, collapsed: false }}
+          columns={[...colums, ...searchFormColumns]}
+          request={async (params: Record<string, any>) => {
+            const { name, classify, region, current, ...res } = params;
+            const postParams = {
+              page: current,
+              pageSize: res.pageSize,
+              name,
+              classify,
+              region,
+            };
+            return fetchFirmList(postParams);
+          }}
+          defaultData={[]}
+          options={false}
+          // postData={(data) => {
+          //   return data.sort((a, b) => {
+          //     const aDay = new Date(a.createdDay.replace(new RegExp('-', 'gm'), '/')).getTime();
+          //     const bDay = new Date(b.createdDay.replace(new RegExp('-', 'gm'), '/')).getTime();
+          //     return bDay - aDay;
+          //   });
+          // }}
+        />
+      )}
+    </TemplateContext.Consumer>
   );
 };
 

@@ -1,7 +1,7 @@
 import { parse } from 'querystring';
 
-/* eslint no-useless-escape:0 import/prefer-default-export:0 */
-const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
+const reg =
+  /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
 
 export const isUrl = (path: string): boolean => reg.test(path);
 
@@ -22,3 +22,21 @@ export const isAntDesignProOrDev = (): boolean => {
 };
 
 export const getPageQuery = () => parse(window.location.href.split('?')[1]);
+
+// 判断对象值是否为空
+export const hasEmptyValue = (objCopy: any): boolean => {
+  if (!objCopy || typeof objCopy !== 'object') {
+    return true;
+  }
+  return Object.keys(objCopy).some((v) => {
+    if (v === 'robotAccount' && objCopy.taskType === 1) {
+      return false;
+    }
+    return (
+      objCopy[v] === '' ||
+      objCopy[v] === null ||
+      objCopy[v] === undefined ||
+      objCopy[v].length === 0
+    );
+  });
+};

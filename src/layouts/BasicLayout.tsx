@@ -113,6 +113,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
     }
   };
   // get children authority
+
   const authorized = useMemo(
     () =>
       getMatchMenu(location.pathname || '/', menuDataRef.current).pop() || {
@@ -139,6 +140,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
         ) {
           return defaultDom;
         }
+
         return <Link to={menuItemProps.path}>{defaultDom}</Link>;
       }}
       breadcrumbRender={(routers = []) => [
