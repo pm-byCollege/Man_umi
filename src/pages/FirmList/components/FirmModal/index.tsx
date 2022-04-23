@@ -6,7 +6,9 @@ import Breakcrumb, { AllPageId, PAGE_ID_INFO } from './Breakcrumb';
 import CheckoutList from '@/components/CheckBoxPageList';
 import { getPostList } from '@/services/firm';
 import { hasEmptyValue } from '@/utils/utils';
-import { addFirm } from '@/services/firm';
+import { addFirm, editFirm } from '@/services/firm';
+import moment from 'moment';
+import { useSelector } from 'umi';
 
 interface IProps {
   onFinish: () => void;
@@ -15,13 +17,41 @@ interface IProps {
 
 const FirmModal: React.FC<IProps> = (props) => {
   const { record, children, onFinish } = props;
-  console.log(1111);
+  const { currentUser } = useSelector((state: any) => state.user);
   const [form] = Form.useForm();
   const [visible, setVisible] = useState<boolean>(false);
   const [sourceData, setSourceData] = useState<any>({});
   const [breakList, setBreakList] = useState<AllPageId[]>(['firm']);
   const currentPageId = breakList[breakList.length - 1];
   // const [sourceData] = useState<any>({});
+
+  useEffect(() => {
+    if (record) {
+      const { endTime, post, postId } = record;
+      const postIdArr = postId.split(',');
+      const posts = post.split(',').map((item: any, index: string | number) => {
+        return {
+          id: Number(postIdArr[index]),
+          postName: item,
+        };
+      });
+      form.setFieldsValue({
+        endTime: moment(endTime, 'YYYY-MM-DD'),
+        name: record.name,
+        region: record.region,
+        classify: record.classify,
+        posts,
+      });
+      setSourceData({
+        ...record,
+        posts,
+      });
+    }
+  }, [record]);
+
+  // useEffect(() => {
+  //   console.log(sourceData, 1111);
+  // }, [sourceData]);
 
   const onClose = () => {
     // if (record) setSourceData(record);
@@ -82,27 +112,51 @@ const FirmModal: React.FC<IProps> = (props) => {
     }
     const { name, classify, region, endTime } = form.getFieldsValue();
 
-    const postData = {
-      name,
-      classify,
-      region,
-      endTime: endTime.format('YYYY-MM-DD'),
-      post: sourceData.posts,
-    };
-    console.log(postData);
+    // 编辑或新增 参数
+    const postData = record.id
+      ? {
+          id: record.id,
+          name,
+          classify,
+          region,
+          endTime: endTime.format('YYYY-MM-DD'),
+          post: sourceData.posts,
+          type: currentUser.type,
+        }
+      : {
+          name,
+          classify,
+          region,
+          endTime: endTime.format('YYYY-MM-DD'),
+          post: sourceData.posts,
+          type: currentUser.type,
+        };
+    console.log(postData, '新增或修改的参数');
     if (hasEmptyValue(postData)) {
       message.warning('请填写完整！');
       return;
     }
 
-    const res = await addFirm(postData);
-    if (res.code === 0) {
-      setSourceData({});
-      form.resetFields();
-      setVisible(false);
-      onFinish();
+    if (record.id) {
+      const res = await editFirm(postData);
+      if (res.code === 0) {
+        setSourceData({});
+        form.resetFields();
+        setVisible(false);
+        onFinish();
+      } else {
+        message.error(res.msg);
+      }
     } else {
-      message.error(res.msg);
+      const res = await addFirm(postData);
+      if (res.code === 0) {
+        setSourceData({});
+        form.resetFields();
+        setVisible(false);
+        onFinish();
+      } else {
+        message.error(res.msg);
+      }
     }
   };
 
@@ -127,14 +181,6 @@ const FirmModal: React.FC<IProps> = (props) => {
       </Form.Item>
     ),
   };
-
-  useEffect(() => {
-    console.log(record);
-
-    if (record) {
-      setSourceData(record);
-    }
-  }, [record]);
 
   return (
     <TaskModalContext.Provider value={getContext()}>

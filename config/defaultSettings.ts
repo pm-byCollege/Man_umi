@@ -16,6 +16,9 @@ const proSettings: DefaultSettings = {
   title: '实习管理系统',
   pwa: false,
   // iconfontUrl: '',
+  menu: {
+    locale: false,
+  },
 };
 
 export type { DefaultSettings };

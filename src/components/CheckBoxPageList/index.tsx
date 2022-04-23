@@ -65,6 +65,7 @@ const CheckBoxPageList: React.FC<CheckBoxPageListProps> = (props) => {
           if (item.id === data.id) checkedValues.push(data);
         });
       });
+
       if (props.onChange) {
         props.onChange(checkedValues);
       }

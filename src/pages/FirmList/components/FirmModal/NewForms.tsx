@@ -6,6 +6,8 @@ const { Option } = Select;
 
 export default ({ record }) => {
   const { posts = [] } = record;
+  console.log(record);
+
   const { updateBreadcrumb } = useContext(TaskModalContext);
 
   const handlePostChange = () => {

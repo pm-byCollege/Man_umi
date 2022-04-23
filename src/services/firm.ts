@@ -20,3 +20,38 @@ export async function addFirm(postName: any) {
     data: postName,
   });
 }
+
+export async function editFirm(postName: any) {
+  return request('/api/editFirm', {
+    method: 'POST',
+    data: postName,
+  });
+}
+
+export async function deleteFirm(id: number, type: number) {
+  return request('/api/deleteFirm', {
+    method: 'POST',
+    data: {
+      id,
+      type,
+    },
+  });
+}
+
+export async function getFirmInfo(id: number) {
+  return request('/api/getFirmInfo', {
+    method: 'POST',
+    data: {
+      id,
+    },
+  });
+}
+
+export async function getDeliveryInfo(id: number) {
+  return request('/api/getDeliveryInfo', {
+    method: 'POST',
+    data: {
+      firmId: id,
+    },
+  });
+}

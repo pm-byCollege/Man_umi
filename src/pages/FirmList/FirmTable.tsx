@@ -1,13 +1,17 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import { useSelector } from 'umi';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
+import { history } from 'umi';
 
-// import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined } from '@ant-design/icons';
 import TemplateContext from './TemplateContext';
-import { fetchFirmList } from '@/services/firm';
+import { fetchFirmList, deleteFirm } from '@/services/firm';
 import styles from './FirmTable.less';
+import FirmModal from './components/FirmModal';
+
+const { confirm } = Modal;
 
 type TableListItem = {
   id: number;
@@ -31,6 +35,24 @@ const ExpiredContact: React.FC = () => {
   }, [taskTableReload]);
 
   // const { setHeadTitle } = useContext(TemplateContext);
+  const onDel = async (id: number) => {
+    confirm({
+      title: '确定要删除这个任企业吗',
+      icon: <CloseCircleOutlined />,
+      content: '删除后不再显示该企业的实习投递情况',
+      okText: '确定',
+      okType: 'danger',
+      cancelText: '取消',
+      centered: true,
+      async onOk() {
+        const res = await deleteFirm(id, currentUser.type);
+        if (res.code === 0) {
+          ref.current?.reload();
+        }
+      },
+      onCancel() {},
+    });
+  };
 
   const colums: ProColumns<TableListItem>[] = [
     {
@@ -72,11 +94,35 @@ const ExpiredContact: React.FC = () => {
       title: <span style={{ paddingLeft: '17px' }}>操作</span>,
       width: '20%',
       hideInSearch: true,
-      render: () => (
+      render: (_: any, record: any) => (
         <>
-          <Button type="link">详情</Button>
-
-          <Button type="link">删除</Button>
+          <Button
+            type="link"
+            onClick={() => {
+              history.push({
+                pathname: '/firmList/firmDetail',
+                query: {
+                  id: record.id,
+                },
+              });
+            }}
+          >
+            详情
+          </Button>
+          <Button
+            type="link"
+            disabled={currentUser.type === 3}
+            onClick={() => {
+              onDel(record.id);
+            }}
+          >
+            删除
+          </Button>
+          <FirmModal record={record} onFinish={() => ref.current?.reload()}>
+            <Button disabled={record.status === 3} type="link">
+              修改
+            </Button>
+          </FirmModal>
         </>
       ),
     },
@@ -129,13 +175,6 @@ const ExpiredContact: React.FC = () => {
           }}
           defaultData={[]}
           options={false}
-          // postData={(data) => {
-          //   return data.sort((a, b) => {
-          //     const aDay = new Date(a.createdDay.replace(new RegExp('-', 'gm'), '/')).getTime();
-          //     const bDay = new Date(b.createdDay.replace(new RegExp('-', 'gm'), '/')).getTime();
-          //     return bDay - aDay;
-          //   });
-          // }}
         />
       )}
     </TemplateContext.Consumer>

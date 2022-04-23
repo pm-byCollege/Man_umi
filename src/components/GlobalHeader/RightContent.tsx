@@ -3,7 +3,7 @@ import type { Settings as ProSettings } from '@ant-design/pro-layout';
 // import { QuestionCircleOutlined } from '@ant-design/icons';
 import React from 'react';
 import type { ConnectProps } from 'umi';
-import { connect, SelectLang } from 'umi';
+import { connect } from 'umi';
 import type { ConnectState } from '@/models/connect';
 import Avatar from './AvatarDropdown';
 // import HeaderSearch from '../HeaderSearch';
@@ -36,7 +36,7 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = (props) => {
           <Tag color={ENVTagColor[REACT_APP_ENV]}>{REACT_APP_ENV}</Tag>
         </span>
       )}
-      <SelectLang className={styles.action} />
+      {/* <SelectLang className={styles.action} /> */}
     </div>
   );
 };

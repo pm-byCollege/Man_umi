@@ -9,7 +9,7 @@ const { REACT_APP_ENV } = process.env;
 export default defineConfig({
   hash: true,
   mfsu: {},
-  webpack5: {},
+  // webpack5: {},
   antd: {},
   dva: {
     hmr: true,
@@ -44,7 +44,6 @@ export default defineConfig({
     basePath: '/',
   },
   // 快速刷新功能 https://umijs.org/config#fastrefresh
-  fastRefresh: {},
   esbuild: {},
   webpack5: {},
 });

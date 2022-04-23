@@ -90,8 +90,6 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
     },
   } = props;
 
-  console.log(props);
-
   const menuDataRef = useRef<MenuDataItem[]>([]);
 
   // 获取用户信息

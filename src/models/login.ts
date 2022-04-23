@@ -52,7 +52,6 @@ const Model: LoginModelType = {
         Cookies.set('token', data.token);
         Cookies.set('phone', data.phone);
         let { redirect } = params as { redirect: string };
-        console.log(redirect);
         if (redirect) {
           const redirectUrlParams = new URL(redirect);
           if (redirectUrlParams.origin === urlParams.origin) {
@@ -68,7 +67,6 @@ const Model: LoginModelType = {
             return;
           }
         }
-        console.log(redirect, '登录后重定向');
         history.replace(redirect || '/');
       }
     },
