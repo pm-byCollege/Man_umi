@@ -119,7 +119,7 @@ const ExpiredContact: React.FC = () => {
             删除
           </Button>
           <FirmModal record={record} onFinish={() => ref.current?.reload()}>
-            <Button disabled={record.status === 3} type="link">
+            <Button disabled={currentUser.type === 3} type="link">
               修改
             </Button>
           </FirmModal>

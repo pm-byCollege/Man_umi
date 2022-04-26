@@ -16,15 +16,15 @@ type IInfo = {
   classify: string;
   endTime: string;
   post: string;
+  postId: string;
 };
 
 export default withRouter(({ location }) => {
   // const dispatch = useDispatch();
   // const { sopTemplateInfo } = useSelector((state: ConnectState) => state.sop);
-  console.log(location);
 
   const { id } = location.query;
-  const [sourceData, setSourceData] = useState<IInfo>([]);
+  const [sourceData, setSourceData] = useState<IInfo>({});
   // const currentId = +id;
 
   // const [visible, setVisible] = useState<boolean>(false);
@@ -48,7 +48,7 @@ export default withRouter(({ location }) => {
         <ActiveInfo title="行业分类" result={sourceData.classify} />
         <ActiveInfo title="招聘截至时间" result={sourceData.endTime} />
       </Card>
-      <DetailTemplateLayout postList={sourceData.post} firmId={id} />
+      <DetailTemplateLayout postList={sourceData.post} postIdList={sourceData.postId} firmId={id} />
 
       {/* {type === 'edit' && <NewTemplateLayout sopTemplateId={currentId} />}
       {type === 'detail' && <DetailTemplateLayout sopTemplateId={currentId} />}
