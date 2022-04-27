@@ -55,3 +55,11 @@ export async function getDeliveryInfo(id: number) {
     },
   });
 }
+
+export async function down(name) {
+  return request(`/api/down?name=${name}`, {
+    method: 'GET',
+      responseType: 'blob',
+  });
+}
+

@@ -6,7 +6,7 @@ import { UploadOutlined } from '@ant-design/icons';
 // import { useForm } from 'antd/es/form/Form';
 import React, { useEffect, useState } from 'react';
 // import { IContentList, useDispatch, useSelector } from 'umi';
-import { getDeliveryInfo } from '@/services/firm';
+import { getDeliveryInfo, down } from '@/services/firm';
 // import SopSendDrawer from '../SopSendDrawer';
 import styles from './NewTemplateLayout.less';
 import { useSelector } from 'umi';
@@ -26,10 +26,12 @@ export default ({
   postList,
   firmId,
   postIdList,
+  firmStatus,
 }: {
   postList: string;
   firmId: number;
   postIdList: string;
+  firmStatus: number;
 }) => {
   // const [form] = useForm();
   // const dispatch = useDispatch();
@@ -44,6 +46,8 @@ export default ({
   // const [contentId, setContentId] = useState<number>(0);
   const [postListArr, setPostListArr] = useState<any[]>([]);
   const [postListIdArr, setPostIdListArr] = useState<any[]>([]);
+  const [isUpLoad, setIsUpLoad] = useState<boolean>();
+  const [isUpLoadFile, setIsUpLoadFile] = useState<string>();
 
   // 获取该企业的投递情况
   const getPostContent = async () => {
@@ -61,6 +65,13 @@ export default ({
 
     console.log(cur);
 
+    // 判断初次加载的第一个岗位是否登录的学生以投简历
+    const isUp = cur.find((b) => b.stu_id === currentUser.stu_id && b.filepath);
+    if (isUp) {
+      setIsUpLoad(true);
+      setIsUpLoadFile(isUp.filepath);
+    } else setIsUpLoad(false);
+
     setcurrentPost(cur);
   }, [postOptions]);
 
@@ -70,11 +81,11 @@ export default ({
       const arr = postList.split(',');
       setPostListArr(arr);
       const arr1 = postIdList.split(',');
-      console.log(arr1, 333);
 
       setPostIdListArr(arr1);
       setDefaultDay([arr[0]]);
       setDefaultDayId(arr1[0]);
+
       getPostContent();
     }
   }, [postList, firmId, postIdList]);
@@ -95,6 +106,12 @@ export default ({
     });
 
     console.log(cur);
+    // 判断切换岗位时该岗位登录的学生是否投递简历。
+    const isUp = cur.find((b) => b.stu_id === currentUser.stu_id && b.filepath);
+    if (isUp) {
+      setIsUpLoad(true);
+      setIsUpLoadFile(isUp.filepath);
+    } else setIsUpLoad(false);
 
     setcurrentPost(cur);
     // form.setFieldsValue({
@@ -105,6 +122,7 @@ export default ({
 
   const upprps = {
     name: 'file',
+    accept: 'pdf',
     action: `/api/upload?stu_id=${currentUser.stu_id}&postId=${defaultDayId}&firmId=${firmId}`,
     headers: {
       authorization: 'authorization-text',
@@ -114,11 +132,24 @@ export default ({
         console.log(info.file, info.fileList);
       }
       if (info.file.status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully`);
+        message.success(`${info.file.name} 上传成功`);
       } else if (info.file.status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
+  };
+
+  const dowmFile = async (name) => {
+    await down(name).then((res) => {
+      console.log(res);
+      const blob = new Blob([res], {
+        type: 'application/pdf;chartset=UTF-8',
+      });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.target = '_blank';
+      link.click();
+    });
   };
 
   // // 查看详细内容
@@ -170,12 +201,29 @@ export default ({
           </Header>
           {currentUser.type === 3 ? (
             <Content style={{ padding: '10px 15px', backgroundColor: '#fff' }}>
-              <div className={styles['new-header-detail']}>截至时间未到，可投递简历</div>
+              <div className={styles['new-header-detail']}>
+                {firmStatus === 1 ? '截至时间未到，可投递' : '截止时间已过不可投递'}
+              </div>
+              <div className={styles['new-header-detail']}>{isUpLoad ? '已投递' : '未投递'}</div>
               <div className={styles['new-content-box']}>
                 <div className={styles['new-content-box-list']}>
                   <Upload {...upprps}>
-                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                    <Button disabled={firmStatus === 0} icon={<UploadOutlined />}>
+                      {isUpLoad ? '重新上传' : '上传简历'}
+                    </Button>
                   </Upload>
+                  {isUpLoad ? (
+                    <Button
+                      style={isUpLoad ? {} : {}}
+                      onClick={() => {
+                        dowmFile(isUpLoadFile);
+                      }}
+                    >
+                      查看简历
+                    </Button>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </div>
             </Content>
@@ -195,7 +243,13 @@ export default ({
                     >
                       <p>学号：{item.stu_id} </p>&emsp;
                       <p>姓名： {item.stu_name}</p>
-                      <a href={item.filePath}>2222222222</a>
+                      <Button
+                        onClick={() => {
+                          dowmFile(item.filepath);
+                        }}
+                      >
+                        查看该学生简历
+                      </Button>
                     </List.Item>
                   )}
                 />

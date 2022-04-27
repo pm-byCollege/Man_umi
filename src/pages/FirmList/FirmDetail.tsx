@@ -8,6 +8,7 @@ import ActiveInfo from '@/components/ActiveInfo';
 // import AddOrEditModal from './components/AddOrEditModal';
 import DetailTemplateLayout from './components/DetailFirmLayout';
 import { getFirmInfo } from '@/services/firm';
+import moment from 'moment';
 
 type IInfo = {
   id: number;
@@ -25,6 +26,8 @@ export default withRouter(({ location }) => {
 
   const { id } = location.query;
   const [sourceData, setSourceData] = useState<IInfo>({});
+  // 公司的截至状态，0为过期，1未过期
+  const [firmStatus, setFirmStatus] = useState<number>();
   // const currentId = +id;
 
   // const [visible, setVisible] = useState<boolean>(false);
@@ -33,6 +36,15 @@ export default withRouter(({ location }) => {
     const res = await getFirmInfo(Id);
     if (res.code === 0) {
       setSourceData(res.data[0]);
+      console.log(moment(res.data[0].endTime).valueOf(), 1111);
+
+      console.log(moment(moment().startOf('day')).valueOf(), 222);
+      // 对比今天和截至日期，判断是否可投递简历。
+      if (moment(moment().startOf('day')).valueOf() < moment(res.data[0].endTime).valueOf()) {
+        setFirmStatus(1);
+      } else {
+        setFirmStatus(0);
+      }
     }
   };
 
@@ -48,7 +60,12 @@ export default withRouter(({ location }) => {
         <ActiveInfo title="行业分类" result={sourceData.classify} />
         <ActiveInfo title="招聘截至时间" result={sourceData.endTime} />
       </Card>
-      <DetailTemplateLayout postList={sourceData.post} postIdList={sourceData.postId} firmId={id} />
+      <DetailTemplateLayout
+        postList={sourceData.post}
+        postIdList={sourceData.postId}
+        firmId={id}
+        firmStatus={firmStatus || 0}
+      />
 
       {/* {type === 'edit' && <NewTemplateLayout sopTemplateId={currentId} />}
       {type === 'detail' && <DetailTemplateLayout sopTemplateId={currentId} />}
