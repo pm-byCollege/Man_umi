@@ -123,7 +123,7 @@ export default ({
   const upprps = {
     name: 'file',
     accept: 'pdf',
-    action: `/api/upload?stu_id=${currentUser.stu_id}&postId=${defaultDayId}&firmId=${firmId}`,
+    action: `/api/upload?stu_id=${currentUser.stu_id}&postId=${defaultDayId}&firmId=${firmId}&stu_name=${currentUser.name}`,
     headers: {
       authorization: 'authorization-text',
     },

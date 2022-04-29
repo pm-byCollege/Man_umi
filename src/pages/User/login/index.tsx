@@ -11,7 +11,7 @@ import { message, Tabs, Button } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
 import { useIntl, connect, FormattedMessage } from 'umi';
-import { getFakeCaptcha } from '@/services/login';
+import { getFakeCaptcha, resetPwd, register } from '@/services/login';
 import type { Dispatch } from 'umi';
 import type { StateType } from '@/models/login';
 import type { LoginParamsType } from '@/services/login';
@@ -44,13 +44,25 @@ const Login: React.FC<LoginProps> = (props) => {
   const [type, setType] = useState<string>('account');
   const intl = useIntl();
 
-  const handleSubmit = (values: LoginParamsType) => {
+  const handleSubmit = async (values: LoginParamsType) => {
     const { dispatch } = props;
     console.log(values, '提交');
-    dispatch({
-      type: 'login/login',
-      payload: { ...values, type },
-    });
+    if (type === 'account') {
+      dispatch({
+        type: 'login/login',
+        payload: { ...values, type },
+      });
+    } else if (type === 'forget') {
+      const res = await resetPwd(values);
+      if (res.code === 0) {
+        setType('account');
+      }
+    } else {
+      const res = await register(values);
+      if (res.code === 0) {
+        setType('account');
+      }
+    }
   };
 
   return (
@@ -82,6 +94,7 @@ const Login: React.FC<LoginProps> = (props) => {
               defaultMessage: 'Account password login',
             })}
           />
+          <Tabs.TabPane key="register" tab="注册" />
           <Tabs.TabPane key="foget" tab="忘记密码" />
         </Tabs>
 
@@ -101,10 +114,7 @@ const Login: React.FC<LoginProps> = (props) => {
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.username.placeholder',
-                defaultMessage: 'Username: admin or user',
-              })}
+              placeholder={'请输入用户名，管理员pm'}
               rules={[
                 {
                   required: true,
@@ -123,10 +133,7 @@ const Login: React.FC<LoginProps> = (props) => {
                 size: 'large',
                 prefix: <LockOutlined className={styles.prefixIcon} />,
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.password.placeholder',
-                defaultMessage: 'Password: ant.design',
-              })}
+              placeholder={'管理员密码111'}
               rules={[
                 {
                   required: true,
@@ -223,6 +230,125 @@ const Login: React.FC<LoginProps> = (props) => {
             />
           </>
         )}
+
+        {type === 'register' && (
+          <>
+            <ProFormText
+              name="username"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入用户名'}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.username.required"
+                      defaultMessage="Please enter user name!"
+                    />
+                  ),
+                },
+              ]}
+            />
+            <ProFormText.Password
+              name="password"
+              fieldProps={{
+                size: 'large',
+                prefix: <LockOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'输入密码'}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.password.required"
+                      defaultMessage="Please enter password！"
+                    />
+                  ),
+                },
+              ]}
+            />
+            <ProFormText
+              name="name"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入姓名'}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.username.required"
+                      defaultMessage="输入姓名!"
+                    />
+                  ),
+                },
+              ]}
+            />
+            <ProFormText
+              name="stu_id"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入学号'}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.username.required"
+                      defaultMessage="输入学号!"
+                    />
+                  ),
+                },
+              ]}
+            />
+            <ProFormText
+              name="phone"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入手机'}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.username.required"
+                      defaultMessage="输入手机!"
+                    />
+                  ),
+                },
+              ]}
+            />
+            <ProFormText
+              name="email"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入邮箱'}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.username.required"
+                      defaultMessage="输入邮箱!"
+                    />
+                  ),
+                },
+              ]}
+            />
+          </>
+        )}
         <div
           style={{
             marginBottom: 24,
@@ -233,7 +359,7 @@ const Login: React.FC<LoginProps> = (props) => {
           </ProFormCheckbox> */}
           <Button
             style={
-              type === 'foget'
+              type === 'foget' || 'register'
                 ? {
                     float: 'right',
                     display: 'none',
