@@ -113,9 +113,9 @@ const FirmModal: React.FC<IProps> = (props) => {
     const { name, classify, region, endTime } = form.getFieldsValue();
 
     // 编辑或新增 参数
-    const postData = record.id
+    const postData = sourceData.id
       ? {
-          id: record.id,
+          id: sourceData.id,
           name,
           classify,
           region,
@@ -137,7 +137,7 @@ const FirmModal: React.FC<IProps> = (props) => {
       return;
     }
 
-    if (record.id) {
+    if (sourceData.id) {
       const res = await editFirm(postData);
       if (res.code === 0) {
         setSourceData({});

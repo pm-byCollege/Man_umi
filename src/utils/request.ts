@@ -62,6 +62,10 @@ request.interceptors.request.use((url, options) => {
       ...options.headers,
       token,
     };
+  } else {
+    headers = {
+      ...options.headers,
+    };
   }
   return { url, options: { ...options, headers } };
 });

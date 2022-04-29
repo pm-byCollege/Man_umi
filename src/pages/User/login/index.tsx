@@ -11,7 +11,7 @@ import { message, Tabs, Button } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
 import { useIntl, connect, FormattedMessage } from 'umi';
-import { getFakeCaptcha, resetPwd, register } from '@/services/login';
+import { getFakeCaptcha, resetPwd, getNewUser } from '@/services/login';
 import type { Dispatch } from 'umi';
 import type { StateType } from '@/models/login';
 import type { LoginParamsType } from '@/services/login';
@@ -40,12 +40,12 @@ export type LoginProps = {
 
 const Login: React.FC<LoginProps> = (props) => {
   const { submitting } = props;
+  const { dispatch } = props;
   // const { status, type: loginType } = userLogin;
   const [type, setType] = useState<string>('account');
   const intl = useIntl();
 
-  const handleSubmit = async (values: LoginParamsType) => {
-    const { dispatch } = props;
+  const handleSubmit = async (values: any) => {
     console.log(values, '提交');
     if (type === 'account') {
       dispatch({
@@ -58,9 +58,12 @@ const Login: React.FC<LoginProps> = (props) => {
         setType('account');
       }
     } else {
-      const res = await register(values);
+      const res = await getNewUser(values);
       if (res.code === 0) {
+        message.success(res.msg);
         setType('account');
+      } else {
+        message.error(res.msg);
       }
     }
   };
@@ -118,12 +121,7 @@ const Login: React.FC<LoginProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="Please enter user name!"
-                    />
-                  ),
+                  message: '输入用户名',
                 },
               ]}
             />
@@ -137,12 +135,7 @@ const Login: React.FC<LoginProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.password.required"
-                      defaultMessage="Please enter password！"
-                    />
-                  ),
+                  message: '密码不为空',
                 },
               ]}
             />
@@ -164,12 +157,7 @@ const Login: React.FC<LoginProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.phoneNumber.required"
-                      defaultMessage="Please enter phone number!"
-                    />
-                  ),
+                  message: '手机号不能为空',
                 },
                 {
                   pattern: /^1\d{10}$/,
@@ -243,12 +231,7 @@ const Login: React.FC<LoginProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="Please enter user name!"
-                    />
-                  ),
+                  message: '用户名不为空',
                 },
               ]}
             />
@@ -262,12 +245,7 @@ const Login: React.FC<LoginProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.password.required"
-                      defaultMessage="Please enter password！"
-                    />
-                  ),
+                  message: '密码不为空',
                 },
               ]}
             />
@@ -281,12 +259,7 @@ const Login: React.FC<LoginProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="输入姓名!"
-                    />
-                  ),
+                  message: '姓名不为空',
                 },
               ]}
             />
@@ -300,12 +273,7 @@ const Login: React.FC<LoginProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="输入学号!"
-                    />
-                  ),
+                  message: '学号不为空',
                 },
               ]}
             />
@@ -319,12 +287,7 @@ const Login: React.FC<LoginProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="输入手机!"
-                    />
-                  ),
+                  message: '手机不为空',
                 },
               ]}
             />
@@ -338,12 +301,7 @@ const Login: React.FC<LoginProps> = (props) => {
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="输入邮箱!"
-                    />
-                  ),
+                  message: '邮箱不为空',
                 },
               ]}
             />

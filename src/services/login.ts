@@ -30,7 +30,7 @@ export async function resetPwd(params: any) {
   });
 }
 
-export async function register(params: any) {
+export async function getNewUser(params) {
   return request('/api/register', {
     method: 'POST',
     data: params,

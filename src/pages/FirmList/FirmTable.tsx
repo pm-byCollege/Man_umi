@@ -173,6 +173,7 @@ const ExpiredContact: React.FC = () => {
             };
             return fetchFirmList(postParams);
           }}
+          pagination={{ pageSize: 5 }}
           defaultData={[]}
           options={false}
         />

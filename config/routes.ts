@@ -52,6 +52,7 @@ export default [
                 name: '待办事项',
                 icon: 'UnorderedListOutlined',
                 component: './Todo',
+                authority: ['user'],
               },
               // {
               //   path: '/person',
@@ -60,10 +61,10 @@ export default [
               //   component: './Person',
               // },
               {
-                path: '/news',
-                name: 'news',
+                path: '/studentList',
+                name: '学生信息',
                 icon: 'smile',
-                component: './News',
+                component: './StudentList',
                 authority: ['admin'],
               },
               // {
