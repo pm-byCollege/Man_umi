@@ -38,14 +38,7 @@ export default withRouter(({ location }) => {
 
   const getContext = () => {
     return {
-      // 修改模板可见属性、修改模板初始值
-      // setTemplateVisible,
-      // setInitValue,
-      // setHeadTitle,
-      // setIsCopyTemplate,
-      // currentKey,
       taskTableReload,
-      // sopTableReload,
     };
   };
 

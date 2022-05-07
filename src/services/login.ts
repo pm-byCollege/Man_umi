@@ -30,9 +30,18 @@ export async function resetPwd(params: any) {
   });
 }
 
-export async function getNewUser(params) {
+export async function getNewUser(params: any) {
   return request('/api/register', {
     method: 'POST',
     data: params,
+  });
+}
+
+export async function sendEmail(params: string) {
+  return request('/api/sendEmail', {
+    method: 'POST',
+    data: {
+      email: params,
+    },
   });
 }

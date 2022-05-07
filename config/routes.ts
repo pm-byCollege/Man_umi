@@ -49,7 +49,7 @@ export default [
               },
               {
                 path: '/todo',
-                name: '待办事项',
+                name: '投递情况',
                 icon: 'UnorderedListOutlined',
                 component: './Todo',
                 authority: ['user'],
@@ -65,6 +65,13 @@ export default [
                 name: '学生信息',
                 icon: 'smile',
                 component: './StudentList',
+                authority: ['admin'],
+              },
+              {
+                path: '/teacherList',
+                name: '教师信息',
+                icon: 'smile',
+                component: './TeacherList',
                 authority: ['admin'],
               },
               // {
