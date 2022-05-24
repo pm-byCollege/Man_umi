@@ -14,7 +14,7 @@ import {
   UnorderedListOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Menu, Spin, Badge } from 'antd';
+import { Menu, Spin } from 'antd';
 import React from 'react';
 import type { ConnectProps } from 'umi';
 import { history, connect } from 'umi';
@@ -77,13 +77,13 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
   };
 
   render(): React.ReactNode {
-    const { todoList } = this.props?.todo;
-    // const todoNum = todoList.filter((item: any) => item.status === 0).length
-    const todoNum = todoList?.filter((item: any) => {
-      if (item != null) {
-        return item.status === 0;
-      }
-    }).length;
+    // const { todoList } = this.props?.todo;
+    // // const todoNum = todoList.filter((item: any) => item.status === 0).length
+    // const todoNum = todoList?.filter((item: any) => {
+    //   if (item != null) {
+    //     return item.status === 0;
+    //   }
+    // }).length;
     const {
       currentUser = {
         avatar: '',
@@ -112,7 +112,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
           <Menu.Item key="todo">
             <UnorderedListOutlined />
             待办事项
-            <Badge count={todoNum} offset={[10, -5]} />
+            {/* <Badge count={todoNum} offset={[10, -5]} /> */}
           </Menu.Item>
         ) : (
           <></>
@@ -131,7 +131,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
           {/* <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" /> */}
           <span className={`${styles.name} anticon`}>
             {currentUser.name}
-            <Badge count={todoNum} dot={true} />
+            {/* <Badge count={todoNum} dot={true} /> */}
           </span>
         </span>
       </HeaderDropdown>

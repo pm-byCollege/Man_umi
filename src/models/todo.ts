@@ -1,35 +1,35 @@
 /*
- * @Descripttion: 
+ * @Descripttion:
  * @version: 1.0
- * @Author: 
+ * @Author:
  * @Date: 2021-10-09 14:30:44
  * @LastEditors: YingJie Xing
  * @LastEditTime: 2021-10-09 14:34:26
  * @FilePath: \ant-design-pro\src\models\todo.ts
- * Copyright 2021 YingJie Xing, All Rights Reserved. 
+ * Copyright 2021 YingJie Xing, All Rights Reserved.
  */
-import { getTodoLists } from "@/services/todo"
+// import { getTodoLists } from "@/services/todo"
 export default {
-    namespcae: 'todo',
+  namespcae: 'todo',
 
-    state: {
-        todoList: []
+  state: {
+    todoList: [],
+  },
+  effects: {
+    *getTodoList({}, {}) {
+      // const data = yield call(getTodoLists)
+      // yield put({
+      //     type: 'setTodoList',
+      //     payload: data
+      // })
     },
-    effects: {
-        *getTodoList({payload,callback}, { call, put }) {
-            const data = yield call(getTodoLists)
-            yield put({
-                type: 'setTodoList',
-                payload: data
-            })
-        }
+  },
+  reducers: {
+    setTodoList(state, action) {
+      return {
+        ...state,
+        todoList: action.payload,
+      };
     },
-    reducers: {
-        setTodoList(state, action) {
-            return {
-                ...state,
-                todoList: action.payload
-            }
-        }
-    }
-}
+  },
+};
