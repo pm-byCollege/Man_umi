@@ -15,5 +15,33 @@ export async function fakeAccountLogin(params: LoginParamsType) {
 }
 
 export async function getFakeCaptcha(mobile: string) {
-  return request(`/api/login/captcha?mobile=${mobile}`);
+  return request('/api/sendEmail', {
+    method: 'POST',
+    data: {
+      mobile,
+    },
+  });
+}
+
+export async function resetPwd(params: any) {
+  return request('/api/resetPwd', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function getNewUser(params: any) {
+  return request('/api/register', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function sendEmail(params: string) {
+  return request('/api/sendEmail', {
+    method: 'POST',
+    data: {
+      email: params,
+    },
+  });
 }

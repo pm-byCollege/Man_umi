@@ -52,7 +52,6 @@ const Model: LoginModelType = {
         Cookies.set('token', data.token);
         Cookies.set('phone', data.phone);
         let { redirect } = params as { redirect: string };
-        console.log(redirect);
         if (redirect) {
           const redirectUrlParams = new URL(redirect);
           if (redirectUrlParams.origin === urlParams.origin) {
@@ -68,7 +67,6 @@ const Model: LoginModelType = {
             return;
           }
         }
-        console.log(redirect, '登录后重定向');
         history.replace(redirect || '/');
       }
     },
@@ -76,6 +74,7 @@ const Model: LoginModelType = {
     logout() {
       const { redirect } = getPageQuery();
       // Note: There may be security issues, please note
+      Cookies.remove('token');
       if (window.location.pathname !== '/user/login' && !redirect) {
         history.replace({
           pathname: '/user/login',
@@ -89,11 +88,12 @@ const Model: LoginModelType = {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      const currentAuthority = payload.data.type === 3 ? 'user' : 'admin';
+      setAuthority(currentAuthority);
       return {
         ...state,
         status: payload.status,
-        type: payload.type,
+        type: payload.data.type,
       };
     },
   },

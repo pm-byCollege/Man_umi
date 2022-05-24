@@ -8,10 +8,10 @@ import {
   // WeiboCircleOutlined,
 } from '@ant-design/icons';
 import { message, Tabs, Button } from 'antd';
-import React, { useState } from 'react';
-import ProForm, { ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
+import React, { useRef, useState } from 'react';
+import ProForm, { ProFormCaptcha, ProFormInstance, ProFormText } from '@ant-design/pro-form';
 import { useIntl, connect, FormattedMessage } from 'umi';
-import { getFakeCaptcha } from '@/services/login';
+import { sendEmail, resetPwd, getNewUser } from '@/services/login';
 import type { Dispatch } from 'umi';
 import type { StateType } from '@/models/login';
 import type { LoginParamsType } from '@/services/login';
@@ -40,17 +40,38 @@ export type LoginProps = {
 
 const Login: React.FC<LoginProps> = (props) => {
   const { submitting } = props;
+  const { dispatch } = props;
   // const { status, type: loginType } = userLogin;
   const [type, setType] = useState<string>('account');
   const intl = useIntl();
-
-  const handleSubmit = (values: LoginParamsType) => {
-    const { dispatch } = props;
+  const formRef = useRef<ProFormInstance>();
+  const handleSubmit = async (values: any) => {
     console.log(values, '提交');
-    dispatch({
-      type: 'login/login',
-      payload: { ...values, type },
-    });
+    if (type === 'account') {
+      dispatch({
+        type: 'login/login',
+        payload: { ...values, type },
+      });
+    } else if (type === 'forget') {
+      const res = await resetPwd(values);
+      if (res.code === 0) {
+        message.success(res.msg);
+        setType('account');
+        formRef?.current?.resetFields();
+      } else {
+        message.success(res.msg);
+        // setType('account');
+      }
+    } else {
+      const res = await getNewUser(values);
+      if (res.code === 0) {
+        message.success(res.msg);
+        formRef?.current?.resetFields();
+        setType('account');
+      } else {
+        message.error(res.msg);
+      }
+    }
   };
 
   return (
@@ -59,6 +80,7 @@ const Login: React.FC<LoginProps> = (props) => {
         // initialValues={{
         //   autoLogin: true,
         // }}
+        formRef={formRef}
         submitter={{
           render: (_, dom) => dom.pop(),
           submitButtonProps: {
@@ -82,7 +104,8 @@ const Login: React.FC<LoginProps> = (props) => {
               defaultMessage: 'Account password login',
             })}
           />
-          <Tabs.TabPane key="foget" tab="忘记密码" />
+          <Tabs.TabPane key="register" tab="注册" />
+          <Tabs.TabPane key="forget" tab="忘记密码" />
         </Tabs>
 
         {/* {status === 'error' && loginType === 'account' && !submitting && (
@@ -101,19 +124,11 @@ const Login: React.FC<LoginProps> = (props) => {
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.username.placeholder',
-                defaultMessage: 'Username: admin or user',
-              })}
+              placeholder={'请输入用户名，管理员pm'}
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="Please enter user name!"
-                    />
-                  ),
+                  message: '输入用户名',
                 },
               ]}
             />
@@ -123,19 +138,11 @@ const Login: React.FC<LoginProps> = (props) => {
                 size: 'large',
                 prefix: <LockOutlined className={styles.prefixIcon} />,
               }}
-              placeholder={intl.formatMessage({
-                id: 'pages.login.password.placeholder',
-                defaultMessage: 'Password: ant.design',
-              })}
+              placeholder={'管理员密码111'}
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.password.required"
-                      defaultMessage="Please enter password！"
-                    />
-                  ),
+                  message: '密码不为空',
                 },
               ]}
             />
@@ -145,33 +152,19 @@ const Login: React.FC<LoginProps> = (props) => {
         {/* {status === 'error' && loginType === 'mobile' && !submitting && (
           <LoginMessage content="Verification code error" />
         )} */}
-        {type === 'foget' && (
+        {type === 'forget' && (
           <>
             <ProFormText
               fieldProps={{
                 size: 'large',
                 prefix: <MobileOutlined className={styles.prefixIcon} />,
               }}
-              name="mobile"
-              placeholder="请输入手机号"
+              name="email"
+              placeholder="请输入邮箱"
               rules={[
                 {
                   required: true,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.phoneNumber.required"
-                      defaultMessage="Please enter phone number!"
-                    />
-                  ),
-                },
-                {
-                  pattern: /^1\d{10}$/,
-                  message: (
-                    <FormattedMessage
-                      id="pages.login.phoneNumber.invalid"
-                      defaultMessage="Malformed phone number!"
-                    />
-                  ),
+                  message: '邮箱不能为空',
                 },
               ]}
             />
@@ -187,6 +180,7 @@ const Login: React.FC<LoginProps> = (props) => {
                 id: 'pages.login.captcha.placeholder',
                 defaultMessage: 'Please enter verification code',
               })}
+              // countDown={}
               captchaTextRender={(timing, count) => {
                 if (timing) {
                   return `${count} ${intl.formatMessage({
@@ -199,7 +193,8 @@ const Login: React.FC<LoginProps> = (props) => {
                   defaultMessage: 'Get verification code',
                 });
               }}
-              name="captcha"
+              phoneName="email"
+              name="code"
               rules={[
                 {
                   required: true,
@@ -211,15 +206,113 @@ const Login: React.FC<LoginProps> = (props) => {
                   ),
                 },
               ]}
-              onGetCaptcha={async (mobile) => {
-                const result = await getFakeCaptcha(mobile);
-                if (result === false) {
-                  return;
-                }
-                message.success(
-                  'Get the verification code successfully! The verification code is: 1234',
-                );
+              onGetCaptcha={async (values) => {
+                console.log(values, 1111);
+                await sendEmail(values);
               }}
+            />
+            <ProFormText
+              name="password"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入密码'}
+              rules={[
+                {
+                  required: true,
+                  message: '姓名不为空',
+                },
+              ]}
+            />
+          </>
+        )}
+
+        {type === 'register' && (
+          <>
+            <ProFormText
+              name="username"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入用户名'}
+              rules={[
+                {
+                  required: true,
+                  message: '用户名不为空',
+                },
+              ]}
+            />
+            <ProFormText.Password
+              name="password"
+              fieldProps={{
+                size: 'large',
+                prefix: <LockOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'输入密码'}
+              rules={[
+                {
+                  required: true,
+                  message: '密码不为空',
+                },
+              ]}
+            />
+            <ProFormText
+              name="name"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入姓名'}
+              rules={[
+                {
+                  required: true,
+                  message: '姓名不为空',
+                },
+              ]}
+            />
+            <ProFormText
+              name="stu_id"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入学号'}
+              rules={[
+                {
+                  required: true,
+                  message: '学号不为空',
+                },
+              ]}
+            />
+            <ProFormText
+              name="phone"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入手机'}
+              rules={[
+                {
+                  required: true,
+                  message: '手机不为空',
+                },
+              ]}
+            />
+            <ProFormText
+              name="email"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={'请输入邮箱'}
+              rules={[
+                {
+                  required: true,
+                  message: '邮箱不为空',
+                },
+              ]}
             />
           </>
         )}
@@ -233,7 +326,7 @@ const Login: React.FC<LoginProps> = (props) => {
           </ProFormCheckbox> */}
           <Button
             style={
-              type === 'foget'
+              type === 'foget' || 'register'
                 ? {
                     float: 'right',
                     display: 'none',
@@ -244,7 +337,7 @@ const Login: React.FC<LoginProps> = (props) => {
             }
             type="link"
             onClick={() => {
-              setType('foget');
+              setType('forget');
             }}
           >
             忘记密码

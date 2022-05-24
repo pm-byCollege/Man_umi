@@ -10,12 +10,15 @@ const proSettings: DefaultSettings = {
   primaryColor: '#1890ff',
   layout: 'side',
   contentWidth: 'Fluid',
-  fixedHeader: false,
+  fixedHeader: true,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'Ant Design Pro',
+  title: '实习管理系统',
   pwa: false,
-  iconfontUrl: '',
+  // iconfontUrl: '',
+  menu: {
+    locale: false,
+  },
 };
 
 export type { DefaultSettings };

@@ -1,41 +1,41 @@
 import type { FC } from 'react';
-import { Avatar, Card, Col, List, Skeleton, Row, Statistic } from 'antd';
-import { Radar } from '@ant-design/charts';
+import { Avatar, Skeleton } from 'antd';
+// import { Radar } from '@ant-design/charts';
 
-import { Link, useRequest } from 'umi';
+// import { useRequest } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
-import moment from 'moment';
-import EditableLinkGroup from './components/EditableLinkGroup';
+// import moment from 'moment';
+// import EditableLinkGroup from './components/EditableLinkGroup';
 import styles from './style.less';
-import type { ActivitiesType, CurrentUser } from './data.d';
-import { queryProjectNotice, queryActivities, fakeChartData } from './service';
+import type { CurrentUser } from './data.d';
+// import { queryProjectNotice, queryActivities, fakeChartData } from './service';
 
-const links = [
-  {
-    title: '操作一',
-    href: '',
-  },
-  {
-    title: '操作二',
-    href: '',
-  },
-  {
-    title: '操作三',
-    href: '',
-  },
-  {
-    title: '操作四',
-    href: '',
-  },
-  {
-    title: '操作五',
-    href: '',
-  },
-  {
-    title: '操作六',
-    href: '',
-  },
-];
+// const links = [
+//   {
+//     title: '操作一',
+//     href: '',
+//   },
+//   {
+//     title: '操作二',
+//     href: '',
+//   },
+//   {
+//     title: '操作三',
+//     href: '',
+//   },
+//   {
+//     title: '操作四',
+//     href: '',
+//   },
+//   {
+//     title: '操作五',
+//     href: '',
+//   },
+//   {
+//     title: '操作六',
+//     href: '',
+//   },
+// ];
 
 const PageHeaderContent: FC<{ currentUser: Partial<CurrentUser> }> = ({ currentUser }) => {
   const loading = currentUser && Object.keys(currentUser).length;
@@ -61,56 +61,56 @@ const PageHeaderContent: FC<{ currentUser: Partial<CurrentUser> }> = ({ currentU
   );
 };
 
-const ExtraContent: FC<Record<string, any>> = () => (
-  <div className={styles.extraContent}>
-    <div className={styles.statItem}>
-      <Statistic title="项目数" value={56} />
-    </div>
-    <div className={styles.statItem}>
-      <Statistic title="团队内排名" value={8} suffix="/ 24" />
-    </div>
-    <div className={styles.statItem}>
-      <Statistic title="项目访问" value={2223} />
-    </div>
-  </div>
-);
+// const ExtraContent: FC<Record<string, any>> = () => (
+//   <div className={styles.extraContent}>
+//     <div className={styles.statItem}>
+//       <Statistic title="项目数" value={56} />
+//     </div>
+//     <div className={styles.statItem}>
+//       <Statistic title="团队内排名" value={8} suffix="/ 24" />
+//     </div>
+//     <div className={styles.statItem}>
+//       <Statistic title="项目访问" value={2223} />
+//     </div>
+//   </div>
+// );
 
 const DashboardWorkplace: FC = () => {
-  const { loading: projectLoading, data: projectNotice = [] } = useRequest(queryProjectNotice);
-  const { loading: activitiesLoading, data: activities = [] } = useRequest(queryActivities);
-  const { data } = useRequest(fakeChartData);
+  // const { loading: projectLoading, data: projectNotice = [] } = useRequest(queryProjectNotice);
+  // const { loading: activitiesLoading, data: activities = [] } = useRequest(queryActivities);
+  // const { data } = useRequest(fakeChartData);
 
-  const renderActivities = (item: ActivitiesType) => {
-    const events = item.template.split(/@\{([^{}]*)\}/gi).map((key) => {
-      if (item[key]) {
-        return (
-          <a href={item[key].link} key={item[key].name}>
-            {item[key].name}
-          </a>
-        );
-      }
-      return key;
-    });
-    return (
-      <List.Item key={item.id}>
-        <List.Item.Meta
-          avatar={<Avatar src={item.user.avatar} />}
-          title={
-            <span>
-              <a className={styles.username}>{item.user.name}</a>
-              &nbsp;
-              <span className={styles.event}>{events}</span>
-            </span>
-          }
-          description={
-            <span className={styles.datetime} title={item.updatedAt}>
-              {moment(item.updatedAt).fromNow()}
-            </span>
-          }
-        />
-      </List.Item>
-    );
-  };
+  // const renderActivities = (item: ActivitiesType) => {
+  //   const events = item.template.split(/@\{([^{}]*)\}/gi).map((key) => {
+  //     if (item[key]) {
+  //       return (
+  //         <a href={item[key].link} key={item[key].name}>
+  //           {item[key].name}
+  //         </a>
+  //       );
+  //     }
+  //     return key;
+  //   });
+  //   return (
+  //     <List.Item key={item.id}>
+  //       <List.Item.Meta
+  //         avatar={<Avatar src={item.user.avatar} />}
+  //         title={
+  //           <span>
+  //             <a className={styles.username}>{item.user.name}</a>
+  //             &nbsp;
+  //             <span className={styles.event}>{events}</span>
+  //           </span>
+  //         }
+  //         description={
+  //           <span className={styles.datetime} title={item.updatedAt}>
+  //             {moment(item.updatedAt).fromNow()}
+  //           </span>
+  //         }
+  //       />
+  //     </List.Item>
+  //   );
+  // };
 
   return (
     <PageContainer
@@ -127,9 +127,9 @@ const DashboardWorkplace: FC = () => {
           }}
         />
       }
-      extraContent={<ExtraContent />}
+      // extraContent={<ExtraContent />}
     >
-      <Row gutter={24}>
+      {/* <Row gutter={24}>
         <Col xl={16} lg={24} md={24} sm={24} xs={24}>
           <Card
             className={styles.projectList}
@@ -234,7 +234,7 @@ const DashboardWorkplace: FC = () => {
             </div>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
     </PageContainer>
   );
 };
